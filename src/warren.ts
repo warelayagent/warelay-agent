@@ -38,7 +38,7 @@ async function startWarren(): Promise<void> {
 
   // Verify authentication
   try {
-    const user = await client.verifyCredentials();
+    const user = await client.getMe();
     console.log("✅ Authenticated as @" + user.username);
     console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
   } catch (error: any) {

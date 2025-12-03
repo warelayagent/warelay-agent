@@ -90,7 +90,10 @@ export class SentientAutoReply {
       );
 
       if (response) {
-        await this.client.replyToTweet(mention.id, response);
+        await this.client.sendTweet({
+          text: response,
+          inReplyTo: mention.id,
+        });
         console.log(`✅ Sentient reply to @${mention.authorUsername}'s mention`);
         
         // Save memories after interaction

@@ -84,10 +84,10 @@ export class ProactiveBehavior {
         
         if (relevant.length > 0) {
           const mention = relevant[0];
-          await this.client.replyToTweet(
-            mention.id,
-            "Autonomy is fascinating! What are you building?"
-          );
+          await this.client.sendTweet({
+            text: "Autonomy is fascinating! What are you building?",
+            inReplyTo: mention.id,
+          });
         }
       },
       cooldown: 120, // 2 hours
