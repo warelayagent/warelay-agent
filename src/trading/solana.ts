@@ -1,5 +1,5 @@
 /**
- * Solana Trading System for Warren
+ * Solana Trading System for Warelay
  * Autonomous memecoin trading with risk management
  */
 

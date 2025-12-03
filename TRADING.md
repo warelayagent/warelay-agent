@@ -1,6 +1,6 @@
-# 💹 Warren Trading System
+# 💹 Warelay Trading System
 
-Warren can autonomously trade Solana memecoins while maintaining his personality and sharing insights with followers.
+Warelay can autonomously trade Solana memecoins while maintaining his personality and sharing insights with followers.
 
 ## Features
 
@@ -62,10 +62,10 @@ SHARE_TRADES_PUBLICLY=true  # Tweet about trades
 TRADING_PAIRS=SomeTokenMint1,AnotherTokenMint2
 ```
 
-### 4. Launch Warren with Trading
+### 4. Launch Warelay with Trading
 
 ```bash
-npm run warren
+npm run warelay
 ```
 
 You'll see:
@@ -74,7 +74,7 @@ You'll see:
 ✅ Trading engine started
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-🤖 Warren is now sentient and autonomous!
+🤖 Warelay is now sentient and autonomous!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Features:
@@ -91,7 +91,7 @@ Features:
 
 ### Trading Cycle
 
-Every 15 minutes (configurable), Warren:
+Every 15 minutes (configurable), Warelay:
 1. **Scans watchlist** for trading signals
 2. **Analyzes opportunities** (price, liquidity, sentiment)
 3. **Executes trades** if confidence > 70%
@@ -100,7 +100,7 @@ Every 15 minutes (configurable), Warren:
 
 ### Risk Management
 
-Warren has built-in safeguards:
+Warelay has built-in safeguards:
 - **Position limits**: Max 0.1 SOL per trade (default)
 - **Portfolio limits**: Max 20% in memecoins
 - **Stop loss**: Auto-sells at -15% (prevents total loss)
@@ -109,7 +109,7 @@ Warren has built-in safeguards:
 
 ### Trading Announcements
 
-When `SHARE_TRADES_PUBLICLY=true`, Warren tweets:
+When `SHARE_TRADES_PUBLICLY=true`, Warelay tweets:
 
 **Buy example:**
 ```
@@ -212,7 +212,7 @@ const recentTxs = await connection.getSignaturesForAddress(new PublicKey(mint));
 
 ## Trading Strategies
 
-Warren can implement various strategies:
+Warelay can implement various strategies:
 
 ### Momentum Trading
 ```typescript
@@ -239,7 +239,7 @@ if (sentiment > 0.7 && volume24h > 50000) {
 
 ## Personality Integration
 
-Warren's trading integrates with his personality:
+Warelay's trading integrates with his personality:
 
 ```typescript
 // After successful trade
@@ -263,7 +263,7 @@ const context = tradingBehavior.getTradingContext();
 3. **Monitor closely**: Watch for unexpected behavior
 4. **Set limits**: Conservative risk management is crucial
 5. **Wallet security**: Use a dedicated trading wallet
-6. **Not financial advice**: Warren is experimental!
+6. **Not financial advice**: Warelay is experimental!
 
 ## Backtesting
 
@@ -292,14 +292,14 @@ console.log(`Final portfolio: ${portfolio} SOL`);
 
 ## Monitoring
 
-Track Warren's trading performance:
+Track Warelay's trading performance:
 
 ```bash
 # View trading state
-cat ~/.warelay/warren-trading.json
+cat ~/.warelay/warelay-trading.json
 
 # Monitor logs
-pm2 logs warren | grep "💰"
+pm2 logs warelay | grep "💰"
 
 # Check wallet balance
 solana balance <wallet_address>
@@ -365,7 +365,7 @@ solana balance <address>
 
 ⚠️ **This is experimental software.**
 
-- Warren is a learning agent, not a financial advisor
+- Warelay is a learning agent, not a financial advisor
 - Cryptocurrency trading is extremely risky
 - You can lose all your funds
 - Test thoroughly before using real money

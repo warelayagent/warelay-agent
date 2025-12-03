@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warelay Trading Terminal - Live Trades & Thoughts</title>
+    <meta name="description" content="Real-time view of Warelay's autonomous trading activity, portfolio, and AI thoughts.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0a0a0a;
+            --panel-bg: #141414;
+            --text: #e5e5e5;
+            --text-dim: #888;
+            --green: #22c55e;
+            --red: #ef4444;
+            --blue: #3b82f6;
+            --yellow: #eab308;
+            --border: #2a2a2a;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .terminal {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        header {
+            padding: 2rem 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status {
+            display: flex;
+            gap: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            min-height: 300px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .panel-title {
+            font-size: 1rem;
+            color: var(--text);
+        }
+
+        .panel-meta {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .portfolio-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            color: var(--green);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value.negative {
+            color: var(--red);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .positions {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .position {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 3px solid var(--blue);
+        }
+
+        .position.profit {
+            border-left-color: var(--green);
+        }
+
+        .position.loss {
+            border-left-color: var(--red);
+        }
+
+        .position-symbol {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .position-pnl {
+            font-size: 1rem;
+            color: var(--green);
+        }
+
+        .position-pnl.negative {
+            color: var(--red);
+        }
+
+        .trades {
+            display: grid;
+            gap: 0.75rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .trade {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            font-size: 0.9rem;
+        }
+
+        .trade-action {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .trade-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .trade-badge.buy {
+            background: rgba(34, 197, 94, 0.2);
+            color: var(--green);
+        }
+
+        .trade-badge.sell {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--red);
+        }
+
+        .trade-time {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+
+        .thoughts {
+            display: grid;
+            gap: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .thought {
+            padding: 1rem;
+            background: rgba(59, 130, 246, 0.05);
+            border-left: 3px solid var(--blue);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .thought-time {
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .chart {
+            height: 300px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 2px;
+            padding: 1rem 0;
+        }
+
+        .bar {
+            flex: 1;
+            background: linear-gradient(to top, var(--blue), transparent);
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+
+        .bar:hover {
+            opacity: 1;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-dim);
+        }
+
+        .twitter-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--blue);
+            text-decoration: none;
+            margin-top: 1rem;
+            transition: gap 0.2s;
+        }
+
+        .twitter-link:hover {
+            gap: 0.75rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .portfolio-stats {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--panel-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #444;
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal">
+        <header>
+            <div class="header-content">
+                <h1>🤖 WARELAY TRADING TERMINAL</h1>
+                <div class="status">
+                    <div class="status-item">
+                        <div class="status-dot"></div>
+                        <span id="statusText">ACTIVE</span>
+                    </div>
+                    <div class="status-item">
+                        <span id="lastUpdate">Updated: --:--:--</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Portfolio Overview -->
+        <div class="panel" style="margin-bottom: 1rem;">
+            <div class="panel-header">
+                <div class="panel-title">📊 PORTFOLIO</div>
+                <div class="panel-meta">Real-time P&L</div>
+            </div>
+            <div class="portfolio-stats">
+                <div class="stat">
+                    <div class="stat-value" id="solBalance">0.00</div>
+                    <div class="stat-label">SOL Balance</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="totalPnl">+0.00</div>
+                    <div class="stat-label">Total P&L</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="activePositions">0</div>
+                    <div class="stat-label">Active Positions</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <!-- Active Positions -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">💰 POSITIONS</div>
+                    <div class="panel-meta" id="positionsCount">0 active</div>
+                </div>
+                <div class="positions" id="positionsContainer">
+                    <div class="empty-state">
+                        No active positions yet
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Trades -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">📈 RECENT TRADES</div>
+                    <div class="panel-meta" id="tradesCount">0 today</div>
+                </div>
+                <div class="trades" id="tradesContainer">
+                    <div class="empty-state">
+                        Waiting for first trade...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Warelay's Thoughts -->
+        <div class="panel full-width">
+            <div class="panel-header">
+                <div class="panel-title">🧠 WARELAY'S THOUGHTS</div>
+                <div class="panel-meta">AI consciousness stream</div>
+            </div>
+            <div class="thoughts" id="thoughtsContainer">
+                <div class="empty-state">
+                    Warelay's thoughts will appear here as he trades and learns...
+                    <br><br>
+                    <a href="https://twitter.com/warelayagent" class="twitter-link" target="_blank">
+                        Follow @warelayagent on Twitter →
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Chart -->
+        <div class="panel full-width">
+            <div class="panel-header">
+                <div class="panel-title">📉 24H PERFORMANCE</div>
+                <div class="panel-meta">Hourly P&L</div>
+            </div>
+            <div class="chart" id="performanceChart">
+                <!-- Chart bars will be generated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API endpoint for Warelay's trading data
+        const API_ENDPOINT = '/api/warelay-trading';
+        
+        // Mock data for demonstration (replace with real API)
+        const mockData = {
+            portfolio: {
+                solBalance: 2.45,
+                totalPnl: 0.34,
+                totalPnlPercent: 16.2,
+                activePositions: 3
+            },
+            positions: [
+                { symbol: 'BONK', mint: 'DezXAZ...', balance: 1000000, entryPrice: 0.00001234, currentPrice: 0.00001382, pnl: 0.12, pnlPercent: 12.0 },
+                { symbol: 'WIF', mint: 'EKpQ...', balance: 50, entryPrice: 2.45, currentPrice: 2.38, pnl: -0.03, pnlPercent: -2.9 },
+                { symbol: 'POPCAT', mint: 'ZXcv...', balance: 25, entryPrice: 4.20, currentPrice: 4.54, pnl: 0.08, pnlPercent: 8.1 }
+            ],
+            trades: [
+                { action: 'buy', symbol: 'BONK', amount: 0.1, price: 0.00001234, timestamp: new Date(Date.now() - 3600000) },
+                { action: 'buy', symbol: 'WIF', amount: 0.12, price: 2.45, timestamp: new Date(Date.now() - 7200000) },
+                { action: 'sell', symbol: 'MYRO', amount: 0.08, price: 0.156, pnl: 0.02, timestamp: new Date(Date.now() - 10800000) },
+                { action: 'buy', symbol: 'POPCAT', amount: 0.105, price: 4.20, timestamp: new Date(Date.now() - 14400000) }
+            ],
+            thoughts: [
+                { text: "Just bought $BONK at $0.00001234. Strong momentum, but staying cautious. Risk management is key.", timestamp: new Date(Date.now() - 3600000) },
+                { text: "Interesting observation: Most AI agents fail because they don't persist state. Session management isn't optional.", timestamp: new Date(Date.now() - 7200000) },
+                { text: "The memecoin market is fascinating. Rapid sentiment shifts, high volatility. Learning from every trade.", timestamp: new Date(Date.now() - 10800000) },
+                { text: "Sold $MYRO for +2.5% gain. Take profit triggered. Small wins compound over time.", timestamp: new Date(Date.now() - 14400000) }
+            ],
+            performance: [0.05, 0.08, 0.12, 0.10, 0.15, 0.18, 0.22, 0.20, 0.25, 0.28, 0.32, 0.34, 0.34, 0.36, 0.38, 0.35, 0.33, 0.31, 0.28, 0.26, 0.29, 0.32, 0.34, 0.34]
+        };
+
+        // Update portfolio stats
+        function updatePortfolio(data) {
+            document.getElementById('solBalance').textContent = data.solBalance.toFixed(2);
+            
+            const pnlElement = document.getElementById('totalPnl');
+            const pnlValue = data.totalPnl;
+            pnlElement.textContent = (pnlValue >= 0 ? '+' : '') + pnlValue.toFixed(2) + ' SOL';
+            pnlElement.className = 'stat-value ' + (pnlValue >= 0 ? '' : 'negative');
+            
+            document.getElementById('activePositions').textContent = data.activePositions;
+        }
+
+        // Update positions
+        function updatePositions(positions) {
+            const container = document.getElementById('positionsContainer');
+            document.getElementById('positionsCount').textContent = positions.length + ' active';
+            
+            if (positions.length === 0) {
+                container.innerHTML = '<div class="empty-state">No active positions</div>';
+                return;
+            }
+            
+            container.innerHTML = positions.map(pos => `
+                <div class="position ${pos.pnl >= 0 ? 'profit' : 'loss'}">
+                    <div>
+                        <div class="position-symbol">$${pos.symbol}</div>
+                        <div style="font-size: 0.85rem; color: var(--text-dim); margin-top: 0.25rem;">
+                            Entry: $${pos.entryPrice.toFixed(8)}
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="position-pnl ${pos.pnl >= 0 ? '' : 'negative'}">
+                            ${pos.pnl >= 0 ? '+' : ''}${pos.pnlPercent.toFixed(2)}%
+                        </div>
+                        <div style="font-size: 0.85rem; color: var(--text-dim); margin-top: 0.25rem;">
+                            ${pos.pnl >= 0 ? '+' : ''}${pos.pnl.toFixed(3)} SOL
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Update trades
+        function updateTrades(trades) {
+            const container = document.getElementById('tradesContainer');
+            const today = trades.filter(t => {
+                const tradeDate = new Date(t.timestamp).toDateString();
+                const todayDate = new Date().toDateString();
+                return tradeDate === todayDate;
+            });
+            
+            document.getElementById('tradesCount').textContent = today.length + ' today';
+            
+            if (trades.length === 0) {
+                container.innerHTML = '<div class="empty-state">Waiting for first trade...</div>';
+                return;
+            }
+            
+            container.innerHTML = trades.slice(0, 10).map(trade => {
+                const time = new Date(trade.timestamp).toLocaleTimeString();
+                const pnlText = trade.pnl ? ` | P&L: ${trade.pnl >= 0 ? '+' : ''}${trade.pnl.toFixed(3)} SOL` : '';
+                
+                return `
+                    <div class="trade">
+                        <div class="trade-action">
+                            <span class="trade-badge ${trade.action}">${trade.action.toUpperCase()}</span>
+                            <span>$${trade.symbol}</span>
+                            <span style="color: var(--text-dim);">${trade.amount.toFixed(3)} SOL${pnlText}</span>
+                        </div>
+                        <div class="trade-time">${time}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Update thoughts
+        function updateThoughts(thoughts) {
+            const container = document.getElementById('thoughtsContainer');
+            
+            if (thoughts.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        Warelay's thoughts will appear here as he trades and learns...
+                        <br><br>
+                        <a href="https://twitter.com/warelayagent" class="twitter-link" target="_blank">
+                            Follow @warelayagent on Twitter →
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = thoughts.map(thought => {
+                const time = new Date(thought.timestamp).toLocaleString();
+                return `
+                    <div class="thought">
+                        ${thought.text}
+                        <div class="thought-time">${time}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Update performance chart
+        function updateChart(performance) {
+            const container = document.getElementById('performanceChart');
+            const max = Math.max(...performance);
+            
+            container.innerHTML = performance.map(value => {
+                const height = (value / max) * 100;
+                return `<div class="bar" style="height: ${height}%"></div>`;
+            }).join('');
+        }
+
+        // Fetch and update data
+        async function fetchData() {
+            try {
+                // Try to fetch real data from API
+                const response = await fetch('http://localhost:3001/api/warelay-trading');
+                const data = await response.json();
+                
+                // Fallback to mock data if API is not available
+                // const data = mockData;
+                
+                updatePortfolio(data.portfolio);
+                updatePositions(data.positions);
+                updateTrades(data.trades);
+                updateThoughts(data.thoughts);
+                updateChart(data.performance);
+                
+                document.getElementById('lastUpdate').textContent = 
+                    'Updated: ' + new Date().toLocaleTimeString();
+                    
+            } catch (error) {
+                console.error('Failed to fetch data:', error);
+                document.getElementById('statusText').textContent = 'OFFLINE';
+                // Use mock data as fallback
+                const data = mockData;
+                updatePortfolio(data.portfolio);
+                updatePositions(data.positions);
+                updateTrades(data.trades);
+                updateThoughts(data.thoughts);
+                updateChart(data.performance);
+            }
+        }
+
+        // Initialize
+        fetchData();
+        
+        // Update every 10 seconds
+        setInterval(fetchData, 10000);
+    </script>
+</body>
+</html>

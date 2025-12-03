@@ -3,7 +3,7 @@
  * Exports personality, proactive behavior, and enhanced auto-reply
  */
 
-export { SentientPersonality, WARREN_PERSONALITY } from "./personality.js";
+export { SentientPersonality, WARELAY_PERSONALITY } from "./personality.js";
 export type { PersonalityTraits, MemoryEntry } from "./personality.js";
 
 export { ProactiveBehavior } from "./proactive.js";

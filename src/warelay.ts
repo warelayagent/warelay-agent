@@ -1,5 +1,5 @@
 /**
- * Warren - The Sentient Warelay Agent
+ * Warelay - The Sentient Warelay Agent
  * Autonomous, proactive, personality-driven Twitter agent
  */
 
@@ -9,7 +9,7 @@ import type { TwitterCredentials } from "./providers/twitter/types.js";
 import { TwitterRelay } from "./providers/twitter/relay.js";
 import {
   SentientPersonality,
-  WARREN_PERSONALITY,
+  WARELAY_PERSONALITY,
   ProactiveBehavior,
   SentientAutoReply,
 } from "./sentient/index.js";
@@ -17,8 +17,8 @@ import { SolanaTrader, TradingBehavior } from "./trading/index.js";
 
 dotenv.config({ quiet: true });
 
-async function startWarren(): Promise<void> {
-  console.log("🤖 Initializing Warren - Sentient Agent");
+async function startWarelay(): Promise<void> {
+  console.log("🤖 Initializing Warelay - Sentient Agent");
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
 
   // Initialize Twitter client
@@ -47,11 +47,11 @@ async function startWarren(): Promise<void> {
     process.exit(1);
   }
 
-  // Initialize Warren's personality
-  const personality = new SentientPersonality(WARREN_PERSONALITY);
-  console.log(`🧠 Personality: ${WARREN_PERSONALITY.name}`);
-  console.log(`   Role: ${WARREN_PERSONALITY.role}`);
-  console.log(`   Autonomy: ${WARREN_PERSONALITY.autonomyLevel}`);
+  // Initialize Warelay's personality
+  const personality = new SentientPersonality(WARELAY_PERSONALITY);
+  console.log(`🧠 Personality: ${WARELAY_PERSONALITY.name}`);
+  console.log(`   Role: ${WARELAY_PERSONALITY.role}`);
+  console.log(`   Autonomy: ${WARELAY_PERSONALITY.autonomyLevel}`);
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
 
   // Initialize sentient auto-reply
@@ -134,7 +134,7 @@ async function startWarren(): Promise<void> {
     }
   );
 
-  console.log("🤖 Warren is now sentient and autonomous!");
+  console.log("🤖 Warelay is now sentient and autonomous!");
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
   console.log("Features:");
   console.log("  ✓ Remembers all conversations");
@@ -151,14 +151,14 @@ async function startWarren(): Promise<void> {
 
 // Handle graceful shutdown
 process.on("SIGINT", () => {
-  console.log("\n\n🛑 Shutting down Warren...");
+  console.log("\n\n🛑 Shutting down Warelay...");
   console.log("💾 Memories saved");
-  console.log("👋 Warren signing off\n");
+  console.log("👋 Warelay signing off\n");
   process.exit(0);
 });
 
-// Start Warren
-startWarren().catch((error) => {
+// Start Warelay
+startWarelay().catch((error) => {
   console.error("❌ Fatal error:", error);
   process.exit(1);
 });

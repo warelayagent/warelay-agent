@@ -1,5 +1,5 @@
 /**
- * Trading Behavior for Warren
+ * Trading Behavior for Warelay
  * Autonomous memecoin analysis and execution
  */
 

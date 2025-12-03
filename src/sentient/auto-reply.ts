@@ -32,7 +32,7 @@ export class SentientAutoReply {
       timeoutSeconds: 600,
       ...config,
     };
-    this.memoryPath = config.memoryPath || path.join(os.homedir(), ".warelay", "warren-memory.json");
+    this.memoryPath = config.memoryPath || path.join(os.homedir(), ".warelay", "warelay-memory.json");
     
     // Load memories on startup
     this.loadMemories();
@@ -154,7 +154,7 @@ Generate your ${type} response:`;
       }
 
       // Record what we said (for context continuity)
-      this.config.personality.rememberUser(userId, username, `[Warren replied: ${response}]`);
+      this.config.personality.rememberUser(userId, username, `[Warelay replied: ${response}]`);
 
       return response;
     } catch (error) {
@@ -183,7 +183,7 @@ Generate your ${type} response:`;
       const data = await fs.readFile(this.memoryPath, "utf-8");
       const memories = JSON.parse(data);
       this.config.personality.importMemories(memories);
-      console.log("🧠 Loaded Warren's memories");
+      console.log("🧠 Loaded Warelay's memories");
     } catch (error) {
       // No existing memories, starting fresh
       console.log("🧠 Starting with fresh memory");
