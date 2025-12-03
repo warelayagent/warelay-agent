@@ -13,6 +13,7 @@ import {
   ProactiveBehavior,
   SentientAutoReply,
 } from "./sentient/index.js";
+import { SolanaTrader, TradingBehavior } from "./trading/index.js";
 
 dotenv.config({ quiet: true });
 
@@ -66,6 +67,41 @@ async function startWarren(): Promise<void> {
   proactive.start(30); // Check every 30 minutes
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
 
+  // Initialize trading (optional - only if configured)
+  if (process.env.SOLANA_PRIVATE_KEY && process.env.ENABLE_TRADING === "true") {
+    console.log("💹 Initializing Solana trading...");
+    
+    const trader = new SolanaTrader({
+      rpcEndpoint: process.env.SOLANA_RPC_ENDPOINT || "https://api.mainnet-beta.solana.com",
+      privateKey: process.env.SOLANA_PRIVATE_KEY,
+      maxTradeSize: parseFloat(process.env.MAX_TRADE_SIZE || "0.1"),
+      maxPortfolioRisk: parseFloat(process.env.MAX_PORTFOLIO_RISK || "20"),
+      stopLossPercent: parseFloat(process.env.STOP_LOSS_PERCENT || "15"),
+      takeProfitPercent: parseFloat(process.env.TAKE_PROFIT_PERCENT || "50"),
+      minLiquidity: parseFloat(process.env.MIN_LIQUIDITY || "10000"),
+      tradingPairs: (process.env.TRADING_PAIRS || "").split(",").filter(Boolean),
+    });
+
+    const trading = new TradingBehavior(
+      trader,
+      personality,
+      {
+        enabled: true,
+        checkIntervalMinutes: parseFloat(process.env.TRADING_CHECK_INTERVAL || "15"),
+        shareTradesPublicly: process.env.SHARE_TRADES_PUBLICLY === "true",
+        maxTradesPerDay: parseInt(process.env.MAX_TRADES_PER_DAY || "10"),
+      },
+      client
+    );
+
+    trading.start();
+    console.log("✅ Trading engine started");
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+  } else {
+    console.log("💤 Trading disabled (set ENABLE_TRADING=true to enable)");
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+  }
+
   // Start relay with sentient auto-reply
   const relay = new TwitterRelay(
     client,
@@ -107,6 +143,9 @@ async function startWarren(): Promise<void> {
   console.log("  ✓ Consistent personality");
   console.log("  ✓ Context-aware responses");
   console.log("  ✓ Autonomous thought generation");
+  if (process.env.ENABLE_TRADING === "true") {
+    console.log("  ✓ Autonomous Solana memecoin trading");
+  }
   console.log("\nPress Ctrl+C to stop\n");
 }
 
