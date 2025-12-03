@@ -1,0 +1,45 @@
+{
+  // Monitor settings
+  "monitorDMs": true,
+  "monitorMentions": true,
+  
+  // Auto-reply settings
+  "autoReplyDMs": true,
+  "autoReplyMentions": true,
+  
+  // User filtering (use "*" for all users)
+  "allowedUsers": ["*"],
+  "blockedUsers": [],
+  
+  // Rate limiting
+  "maxTweetsPerHour": 50,
+  "maxDMsPerHour": 100,
+  
+  // Auto-reply configuration
+  "autoReply": {
+    // Mode: "static" for fixed text, "command" for AI/external command
+    "mode": "command",
+    
+    // Command to run (e.g., Claude CLI)
+    "command": ["claude", "--dangerously-skip-permissions"],
+    
+    // Prefix added to all inputs (like a system prompt)
+    "bodyPrefix": "You are a helpful Twitter assistant. Keep all responses under 280 characters and be friendly and concise.\n\n",
+    
+    // Timeout for command execution (seconds)
+    "timeoutSeconds": 30,
+    
+    // Session management for multi-turn conversations
+    "session": {
+      // "per-user" = separate conversation per user
+      // "global" = one shared conversation for all users
+      "scope": "per-user",
+      
+      // Keywords that reset the conversation
+      "resetTriggers": ["/new", "/reset"],
+      
+      // How long before a session expires (minutes)
+      "idleMinutes": 60
+    }
+  }
+}
