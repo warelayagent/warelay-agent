@@ -17,6 +17,11 @@ app.get('/terminal.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'terminal.html'));
 });
 
+// Serve builder.html for /builder.html
+app.get('/builder.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'builder.html'));
+});
+
 // Export for Vercel
 module.exports = app;
 
