@@ -18,6 +18,8 @@
     "wa": "tsx src/index.ts",
     "warelay-agent": "tsx src/warelay-agent.ts",
     "wa-agent": "tsx src/warelay-agent.ts",
+    "warren": "tsx src/warren.ts",
+    "sentient": "tsx src/warren.ts",
     "website": "cd website && npm install && npm start",
     "website:dev": "cd website && npm run dev",
     "lint": "biome check src",
