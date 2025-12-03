@@ -46,7 +46,7 @@ This guide will walk you through setting up and running your automated Twitter a
 ### Install Dependencies
 
 ```bash
-cd /Users/zach/Downloads/warelay-main
+cd warelay-main
 npm install twitter-api-v2
 ```
 
