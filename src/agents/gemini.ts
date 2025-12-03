@@ -11,7 +11,7 @@ export const GEMINI_IDENTITY_PREFIX =
 function parseGeminiOutput(raw: string): { text?: string; meta?: AgentMeta } {
   const trimmed = raw.trim();
   const text = trimmed || undefined;
-  return { texts: text ? [text] : undefined, meta: undefined };
+  return { text, meta: undefined };
 }
 
 export const geminiSpec: AgentSpec = {

@@ -13,6 +13,7 @@ export interface TwitterCredentials {
 export interface TwitterDM {
   id: string;
   senderId: string;
+  senderUsername?: string;
   recipientId: string;
   text: string;
   createdAt: Date;

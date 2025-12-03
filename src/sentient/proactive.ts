@@ -69,14 +69,14 @@ export class ProactiveBehavior {
     this.triggers.push({
       type: "event",
       condition: async () => {
-        const mentions = await this.client.getMentions({ maxResults: 5 });
+        const mentions = await this.client.getMentions("5");
         return mentions.some(m => 
           m.text.toLowerCase().includes("autonomous") || 
           m.text.toLowerCase().includes("agent")
         );
       },
       action: async () => {
-        const mentions = await this.client.getMentions({ maxResults: 5 });
+        const mentions = await this.client.getMentions("5");
         const relevant = mentions.filter(m => 
           m.text.toLowerCase().includes("autonomous") || 
           m.text.toLowerCase().includes("agent")

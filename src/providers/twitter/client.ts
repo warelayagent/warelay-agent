@@ -26,7 +26,7 @@ export class TwitterClient {
       accessSecret: credentials.accessSecret,
     });
 
-    this.readWriteClient = this.client.readWrite;
+    this.readWriteClient = this.client;
   }
 
   /**
@@ -35,7 +35,7 @@ export class TwitterClient {
   async getMe(): Promise<TwitterUser> {
     const user = await this.readWriteClient.v2.me({
       "user.fields": ["id", "username", "name"],
-    });x
+    });
     return {
       id: user.data.id,
       username: user.data.username,

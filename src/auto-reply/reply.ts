@@ -329,15 +329,10 @@ export async function getReplyFromConfig(
         timeoutSeconds,
         commandRunner,
       });
-      const payloadArray =
-        runResult.payloads ?? (runResult.payload ? [runResult.payload] : []);
+      const payloadArray = runResult.payloads ?? [];
       const meta = runResult.meta;
-      const normalizedPayloads =
-        payloadArray.length === 1 ? payloadArray[0] : payloadArray;
-      if (
-        !normalizedPayloads ||
-        (Array.isArray(normalizedPayloads) && normalizedPayloads.length === 0)
-      ) {
+      const normalizedPayloads = payloadArray.length > 0 ? payloadArray[0] : undefined;
+      if (!normalizedPayloads) {
         return undefined;
       }
       if (sessionCfg && sessionStore && sessionKey) {
