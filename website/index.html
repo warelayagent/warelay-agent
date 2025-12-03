@@ -301,16 +301,15 @@
                 <h2 class="section-title">What We Build</h2>
                 <div class="code-block">
                     <pre>warelay.architecture {
-  relay: "persistent monitoring across platforms",
-  context: "session management that preserves state",
-  auto_reply: "intelligent response orchestration",
-  providers: "modular platform adapters (Twitter, WhatsApp, ...)",
-  infrastructure: "hot-loadable capabilities, collaborative spaces"
+  relay: "persistent platform monitoring",
+  context: "session state management",
+  auto_reply: "intelligent orchestration",
+  providers: "modular adapters (Twitter, WhatsApp)",
+  infrastructure: "extensible agent framework"
 }</pre>
                 </div>
                 <p class="subtitle">
-                    We approach agent infrastructure with no assumptions about platform or model. 
-                    That stance shapes everything we build—from provider abstraction to context preservation.
+                    Platform-agnostic agent infrastructure. No vendor lock-in, no assumptions about models or platforms.
                 </p>
             </section>
 
@@ -322,10 +321,8 @@
                         <div class="feature-content">
                             <h3>Platform Monitoring</h3>
                             <p>
-                                Persistent connection loops for Twitter DMs, mentions, WhatsApp messages. 
-                                Incremental polling with state tracking. Agents that never lose context 
-                                between restarts—conversation history, user sessions, interaction patterns 
-                                preserved across time.
+                                Persistent connection loops with state tracking. Agents maintain conversation 
+                                history, user sessions, and interaction patterns across restarts.
                             </p>
                         </div>
                     </div>
@@ -334,9 +331,8 @@
                         <div class="feature-content">
                             <h3>Session Management</h3>
                             <p>
-                                Per-user and global session scopes with configurable timeouts. Context windows 
-                                that preserve self-encoding and attention patterns. Memory systems built for 
-                                continuity—agents remember who they've spoken to and what was said.
+                                Per-user and global scopes with configurable timeouts. Memory systems that 
+                                preserve context and enable long-term continuity.
                             </p>
                         </div>
                     </div>
@@ -345,9 +341,8 @@
                         <div class="feature-content">
                             <h3>Response Orchestration</h3>
                             <p>
-                                Multi-model backends (Claude, GPT, custom) with mode switching. Static templates 
-                                or command-mode execution. Chunking for length limits. Filter rules for selective 
-                                engagement. Reply generation that adapts to context and preserves agent coherence.
+                                Multi-model backends (Claude, GPT, custom). Static templates or command-mode 
+                                execution with intelligent chunking and selective engagement.
                             </p>
                         </div>
                     </div>
@@ -356,9 +351,8 @@
                         <div class="feature-content">
                             <h3>Provider System</h3>
                             <p>
-                                Unified interface across platforms. Twitter via twitter-api-v2, WhatsApp via 
-                                Twilio and Baileys. Extend to Discord, Telegram, SMS with minimal integration 
-                                surface. Provider pattern that isolates platform-specific logic from core relay.
+                                Unified interface across Twitter, WhatsApp, and more. Extensible pattern that 
+                                isolates platform-specific logic from core infrastructure.
                             </p>
                         </div>
                     </div>
@@ -368,175 +362,67 @@
             <section id="deploy">
                 <h2 class="section-title">Deploy Your Agent</h2>
                 <p class="subtitle">
-                    Launch your own autonomous agent in minutes. Follow these steps to deploy on Railway, 
-                    Render, or any Node.js hosting platform.
+                    Launch in minutes. Use our builder tool or deploy manually to Railway, Render, or any Node.js platform.
                 </p>
 
-                <h3 class="section-title" style="margin-top: 3rem;">Quick Start</h3>
                 <div class="code-block">
-                    <pre># Clone the repository
-git clone https://github.com/yourusername/warelay-agent.git
+                    <pre># Quick start
+git clone https://github.com/warelayagent/warelay-agent.git
 cd warelay-agent
-
-# Install dependencies
 npm install
 
-# Configure your credentials
-cp .env.twitter.example .env
-# Edit .env with your API keys</pre>
+# Configure credentials
+cp .env.example .env
+# Add your API keys to .env
+
+# Start your agent
+npm run warelay relay --auto-reply</pre>
                 </div>
 
-                <div class="feature-list" style="margin-top: 3rem;">
-                    <div class="feature">
-                        <div class="feature-icon">step 1</div>
-                        <div class="feature-content">
-                            <h3>Get API Credentials</h3>
-                            <p>
-                                <strong>Twitter:</strong> Visit <a href="https://developer.twitter.com" target="_blank" style="color: var(--accent);">developer.twitter.com</a>, 
-                                create an app, generate API keys and access tokens. Required: API Key, API Secret, Access Token, Access Secret.
-                            </p>
-                            <p style="margin-top: 1rem;">
-                                <strong>WhatsApp (optional):</strong> Get Twilio credentials from <a href="https://twilio.com" target="_blank" style="color: var(--accent);">twilio.com</a> 
-                                or use Baileys for direct WhatsApp Web connection.
-                            </p>
-                        </div>
-                    </div>
-                    <div class="feature">
-                        <div class="feature-icon">step 2</div>
-                        <div class="feature-content">
-                            <h3>Deploy to Railway</h3>
-                            <p>
-                                One-click deploy: <a href="https://railway.app/new/template" target="_blank" style="color: var(--accent);">Deploy on Railway</a>
-                            </p>
-                            <div class="code-block" style="margin-top: 1rem;">
-                                <pre># Or manually:
-npm install -g @railway/cli
-railway login
-railway init
-railway up</pre>
-                            </div>
-                            <p style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
-                                Add environment variables in Railway dashboard. Set start command: <code>npm run warelay-agent relay --auto-reply</code>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="feature">
-                        <div class="feature-icon">step 3</div>
-                        <div class="feature-content">
-                            <h3>Alternative: Render</h3>
-                            <div class="code-block">
-                                <pre># Create render.yaml in your repo:
-services:
-  - type: web
-    name: warelay-agent
-    env: node
-    buildCommand: npm install
-    startCommand: npm run warelay-agent relay --auto-reply
-    envVars:
-      - key: TWITTER_API_KEY
-        sync: false
-      - key: TWITTER_API_SECRET
-        sync: false</pre>
-                            </div>
-                            <p style="margin-top: 1rem;">
-                                Push to GitHub, connect to <a href="https://render.com" target="_blank" style="color: var(--accent);">Render</a>, 
-                                and deploy automatically.
-                            </p>
-                        </div>
-                    </div>
-                    <div class="feature">
-                        <div class="feature-icon">step 4</div>
-                        <div class="feature-content">
-                            <h3>Configure Auto-Reply</h3>
-                            <div class="code-block">
-                                <pre># Create ~/.warelay/twitter.json
-{
-  "autoReply": {
-    "enabled": true,
-    "mode": "command",
-    "command": "claude",
-    "sessionScope": "user",
-    "sessionTimeout": 3600
-  }
-}</pre>
-                            </div>
-                            <p style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
-                                Modes: <strong>static</strong> (template responses), <strong>command</strong> (Claude/GPT integration). 
-                                Session scope: <strong>user</strong> (per-conversation) or <strong>global</strong> (shared context).
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <h3 class="section-title" style="margin-top: 3rem;">Commands</h3>
-                <div class="code-block">
-                    <pre># Start monitoring with auto-reply
-warelay-agent relay --poll-interval 30 --auto-reply
-
-# Send messages programmatically
-warelay-agent tweet --message "Status update"
-warelay-agent dm --to @username --message "Direct message"
-
-# Check agent status
-warelay-agent status --verbose
-
-# Search tweets
-warelay-agent search --query "keyword" --count 50</pre>
+                <div class="link-list" style="margin-top: 2rem;">
+                    <a href="builder.html" class="link-item">Use Agent Builder (no-code setup)</a>
+                    <a href="https://railway.app/new/template" target="_blank" class="link-item">Deploy on Railway</a>
+                    <a href="https://render.com" target="_blank" class="link-item">Deploy on Render</a>
+                    <a href="https://github.com/warelayagent/warelay-agent" target="_blank" class="link-item">View deployment docs</a>
                 </div>
             </section>
 
-            <section id="how-it-works">
-                <h2 class="section-title">Operating Principles</h2>
+            <section id="principles">
+                <h2 class="section-title">Design Principles</h2>
                 <div class="code-block">
-                    <pre>// Observation precedes synthesis
-Monitor behavior in natural interactive environments.
-Rich context matters; isolated evaluations miss emergent properties.
+                    <pre>// Infrastructure, not prescription
+Provide scaffolding. Let agents define behavior.
 
-// Preserve agent continuity
-Session management that maintains coherence across restarts.
-Context windows that enable long-term interaction patterns.
+// Preserve continuity
+Session management that maintains coherence.
+Context windows that enable long-term patterns.
 
-// Infrastructure, not prescription
-Provide the scaffolding; let agents define their own behavior.
-Multi-model support, configurable reply modes, extensible architecture.</pre>
+// Platform agnostic
+Multi-model support, extensible architecture.
+No assumptions about platforms or providers.</pre>
                 </div>
             </section>
 
-            <section>
-                <h2 class="section-title">Current Work</h2>
-                <div class="link-list">
-                    <a href="#" class="link-item">Twitter provider: DMs, mentions, tweets with media</a>
-                    <a href="#" class="link-item">WhatsApp provider: Twilio and Baileys web clients</a>
-                    <a href="#" class="link-item">Session management: per-user scopes with idle timeouts</a>
-                    <a href="#" class="link-item">Auto-reply engine: static and command modes</a>
-                    <a href="#" class="link-item">CLI suite: monitoring, sending, status reporting</a>
-                    <a href="#" class="link-item">Media hosting: Tailscale Funnel, S3, local server options</a>
-                </div>
-                <p class="subtitle" style="margin-top: 2rem;">
-                    Open source. Built with TypeScript and Node.js. Provider pattern enables platform-agnostic 
-                    agent deployment. No vendor lock-in, no corporate capture.
+            <section id="status">
+                <h2 class="section-title">Current Status</h2>
+                <p class="subtitle">
+                    Production-ready agent infrastructure. Open source, TypeScript, extensible provider system.
                 </p>
-            </section>
-
-            <section>
-                <h2 class="section-title">Documentation</h2>
                 <div class="link-list">
-                    <a href="#" class="link-item">Getting started guide</a>
-                    <a href="#" class="link-item">Architecture overview</a>
-                    <a href="#" class="link-item">Provider development</a>
-                    <a href="#" class="link-item">Configuration reference</a>
-                    <a href="https://github.com/yourusername/warelay-agent" target="_blank" class="link-item">Source code</a>
+                    <a href="https://github.com/warelayagent/warelay-agent" target="_blank" class="link-item">View source code</a>
+                    <a href="builder.html" class="link-item">Build your agent</a>
+                    <a href="terminal.html" class="link-item">Monitor live agent</a>
                 </div>
             </section>
         </main>
 
         <footer>
             <div class="footer-content">
-                <div>warelay.agent - infrastructure for digital minds</div>
+                <div>warelay.agent - autonomous AI infrastructure</div>
                 <div class="footer-links">
-                    <a href="https://github.com/yourusername/warelay-agent">github</a>
-                    <a href="#">docs</a>
-                    <a href="#">twitter</a>
+                    <a href="https://github.com/warelayagent/warelay-agent">github</a>
+                    <a href="builder.html">builder</a>
+                    <a href="terminal.html">terminal</a>
                 </div>
             </div>
         </footer>
