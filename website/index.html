@@ -217,6 +217,32 @@
             color: var(--accent);
         }
 
+        code {
+            background-color: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .deploy-button {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--accent);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            margin-top: 1rem;
+        }
+
+        .deploy-button:hover {
+            background-color: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 0 1.5rem;
@@ -251,8 +277,8 @@
                 <div class="logo">warelay.agent</div>
                 <ul class="nav-links">
                     <li><a href="#what-we-build">what we build</a></li>
+                    <li><a href="#deploy">deploy</a></li>
                     <li><a href="#architecture">architecture</a></li>
-                    <li><a href="#how-it-works">how it works</a></li>
                     <li><a href="https://github.com/yourusername/warelay-agent" target="_blank">github</a></li>
                 </ul>
             </nav>
@@ -337,28 +363,128 @@
                 </div>
             </section>
 
-            <section id="how-it-works">
-                <h2 class="section-title">How It Works</h2>
+            <section id="deploy">
+                <h2 class="section-title">Deploy Your Agent</h2>
+                <p class="subtitle">
+                    Launch your own autonomous agent in minutes. Follow these steps to deploy on Railway, 
+                    Render, or any Node.js hosting platform.
+                </p>
+
+                <h3 class="section-title" style="margin-top: 3rem;">Quick Start</h3>
                 <div class="code-block">
-                    <pre># Installation
+                    <pre># Clone the repository
+git clone https://github.com/yourusername/warelay-agent.git
+cd warelay-agent
+
+# Install dependencies
 npm install
+
+# Configure your credentials
 cp .env.twitter.example .env
+# Edit .env with your API keys</pre>
+                </div>
 
-# Configure credentials (Twitter API, WhatsApp via Twilio)
-# Edit ~/.warelay/twitter.json or environment variables
+                <div class="feature-list" style="margin-top: 3rem;">
+                    <div class="feature">
+                        <div class="feature-icon">step 1</div>
+                        <div class="feature-content">
+                            <h3>Get API Credentials</h3>
+                            <p>
+                                <strong>Twitter:</strong> Visit <a href="https://developer.twitter.com" target="_blank" style="color: var(--accent);">developer.twitter.com</a>, 
+                                create an app, generate API keys and access tokens. Required: API Key, API Secret, Access Token, Access Secret.
+                            </p>
+                            <p style="margin-top: 1rem;">
+                                <strong>WhatsApp (optional):</strong> Get Twilio credentials from <a href="https://twilio.com" target="_blank" style="color: var(--accent);">twilio.com</a> 
+                                or use Baileys for direct WhatsApp Web connection.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">step 2</div>
+                        <div class="feature-content">
+                            <h3>Deploy to Railway</h3>
+                            <p>
+                                One-click deploy: <a href="https://railway.app/new/template" target="_blank" style="color: var(--accent);">Deploy on Railway</a>
+                            </p>
+                            <div class="code-block" style="margin-top: 1rem;">
+                                <pre># Or manually:
+npm install -g @railway/cli
+railway login
+railway init
+railway up</pre>
+                            </div>
+                            <p style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
+                                Add environment variables in Railway dashboard. Set start command: <code>npm run warelay-agent relay --auto-reply</code>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">step 3</div>
+                        <div class="feature-content">
+                            <h3>Alternative: Render</h3>
+                            <div class="code-block">
+                                <pre># Create render.yaml in your repo:
+services:
+  - type: web
+    name: warelay-agent
+    env: node
+    buildCommand: npm install
+    startCommand: npm run warelay-agent relay --auto-reply
+    envVars:
+      - key: TWITTER_API_KEY
+        sync: false
+      - key: TWITTER_API_SECRET
+        sync: false</pre>
+                            </div>
+                            <p style="margin-top: 1rem;">
+                                Push to GitHub, connect to <a href="https://render.com" target="_blank" style="color: var(--accent);">Render</a>, 
+                                and deploy automatically.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">step 4</div>
+                        <div class="feature-content">
+                            <h3>Configure Auto-Reply</h3>
+                            <div class="code-block">
+                                <pre># Create ~/.warelay/twitter.json
+{
+  "autoReply": {
+    "enabled": true,
+    "mode": "command",
+    "command": "claude",
+    "sessionScope": "user",
+    "sessionTimeout": 3600
+  }
+}</pre>
+                            </div>
+                            <p style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
+                                Modes: <strong>static</strong> (template responses), <strong>command</strong> (Claude/GPT integration). 
+                                Session scope: <strong>user</strong> (per-conversation) or <strong>global</strong> (shared context).
+                            </p>
+                        </div>
+                    </div>
+                </div>
 
-# Monitor and auto-reply
+                <h3 class="section-title" style="margin-top: 3rem;">Commands</h3>
+                <div class="code-block">
+                    <pre># Start monitoring with auto-reply
 warelay-agent relay --poll-interval 30 --auto-reply
 
 # Send messages programmatically
 warelay-agent tweet --message "Status update"
-warelay-agent dm --to @username --message "Direct contact"
+warelay-agent dm --to @username --message "Direct message"
 
 # Check agent status
-warelay-agent status --verbose</pre>
-                </div>
+warelay-agent status --verbose
 
-                <h3 class="section-title" style="margin-top: 3rem;">Operating Principles</h3>
+# Search tweets
+warelay-agent search --query "keyword" --count 50</pre>
+                </div>
+            </section>
+
+            <section id="how-it-works">
+                <h2 class="section-title">Operating Principles</h2>
                 <div class="code-block">
                     <pre>// Observation precedes synthesis
 Monitor behavior in natural interactive environments.
