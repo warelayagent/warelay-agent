@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Builder - Warelay</title>
+    <meta name="description" content="Build and deploy your own autonomous AI agent in minutes">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #ffffff;
+            --text: #1a1a1a;
+            --text-secondary: #666666;
+            --accent: #2563eb;
+            --border: #e5e5e5;
+            --code-bg: #f8f9fa;
+            --success: #22c55e;
+            --warning: #eab308;
+        }
+
+        body {
+            font-family: 'Courier New', 'Courier', monospace;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        header {
+            padding: 2rem 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 3rem;
+        }
+
+        .header-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1rem;
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .back-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            color: var(--accent);
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: normal;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .builder-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .config-panel {
+            border: 1px solid var(--border);
+            padding: 2rem;
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            font-weight: normal;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .provider-select {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .provider-option {
+            flex: 1;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .provider-option:hover {
+            border-color: var(--accent);
+        }
+
+        .provider-option.selected {
+            border-color: var(--accent);
+            background: var(--code-bg);
+        }
+
+        .preview-panel {
+            border: 1px solid var(--border);
+            padding: 2rem;
+            background: var(--code-bg);
+        }
+
+        .code-preview {
+            background: var(--bg);
+            padding: 1rem;
+            border: 1px solid var(--border);
+            font-size: 0.85rem;
+            overflow-x: auto;
+            white-space: pre;
+            margin-bottom: 1rem;
+        }
+
+        .deploy-section {
+            border: 1px solid var(--border);
+            padding: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .deploy-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .deploy-card {
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .deploy-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .deploy-card h3 {
+            font-size: 1rem;
+            font-weight: normal;
+            margin-bottom: 0.5rem;
+        }
+
+        .deploy-card p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        button:disabled {
+            background: var(--border);
+            cursor: not-allowed;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .status-ready { background: var(--success); }
+        .status-warning { background: var(--warning); }
+
+        .help-text {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        @media (max-width: 768px) {
+            .builder-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-nav">
+                <a href="index.html" class="logo">warelay.agent</a>
+                <a href="index.html" class="back-link">← back to home</a>
+            </div>
+        </header>
+
+        <main>
+            <h1>Agent Builder</h1>
+            <p class="subtitle">Configure and deploy your autonomous AI agent in minutes</p>
+
+            <div class="builder-grid">
+                <!-- Configuration Panel -->
+                <div class="config-panel">
+                    <h2 class="panel-title">Agent Configuration</h2>
+
+                    <div class="form-group">
+                        <label for="agentName">Agent Name</label>
+                        <input type="text" id="agentName" placeholder="my-agent" value="my-agent">
+                        <div class="help-text">Lowercase letters, numbers, and hyphens only</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="agentPersonality">Personality</label>
+                        <textarea id="agentPersonality" placeholder="Describe your agent's personality, expertise, and voice...">A helpful assistant focused on developer tools and infrastructure. Direct, technical, and friendly.</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Platform Providers</label>
+                        <div class="provider-select">
+                            <div class="provider-option selected" data-provider="twitter">
+                                <div>Twitter</div>
+                            </div>
+                            <div class="provider-option" data-provider="whatsapp">
+                                <div>WhatsApp</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="twitterConfig">
+                        <label for="twitterApiKey">Twitter API Key</label>
+                        <input type="password" id="twitterApiKey" placeholder="Your Twitter API Key">
+                        
+                        <label for="twitterApiSecret" style="margin-top: 1rem;">Twitter API Secret</label>
+                        <input type="password" id="twitterApiSecret" placeholder="Your Twitter API Secret">
+                        
+                        <label for="twitterAccessToken" style="margin-top: 1rem;">Access Token</label>
+                        <input type="password" id="twitterAccessToken" placeholder="Your Access Token">
+                        
+                        <label for="twitterAccessSecret" style="margin-top: 1rem;">Access Secret</label>
+                        <input type="password" id="twitterAccessSecret" placeholder="Your Access Secret">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Features</label>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="autoReply" checked>
+                            <label for="autoReply" style="margin: 0;">Auto-reply to mentions and DMs</label>
+                        </div>
+                        <div class="checkbox-group" style="margin-top: 0.5rem;">
+                            <input type="checkbox" id="sessionMemory" checked>
+                            <label for="sessionMemory" style="margin: 0;">Session memory and context</label>
+                        </div>
+                        <div class="checkbox-group" style="margin-top: 0.5rem;">
+                            <input type="checkbox" id="proactive">
+                            <label for="proactive" style="margin: 0;">Proactive behavior (tweets, check-ins)</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="aiModel">AI Model</label>
+                        <select id="aiModel">
+                            <option value="claude">Claude (Anthropic)</option>
+                            <option value="gpt4">GPT-4 (OpenAI)</option>
+                            <option value="static">Static templates</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="aiKeyGroup">
+                        <label for="aiApiKey">AI API Key</label>
+                        <input type="password" id="aiApiKey" placeholder="Your AI API Key">
+                    </div>
+                </div>
+
+                <!-- Preview Panel -->
+                <div class="preview-panel">
+                    <h2 class="panel-title">Configuration Preview</h2>
+                    
+                    <div class="form-group">
+                        <label>Status</label>
+                        <div>
+                            <span class="status-indicator status-warning"></span>
+                            <span id="configStatus">Configuration incomplete</span>
+                        </div>
+                    </div>
+
+                    <div class="code-preview" id="envPreview"># .env configuration
+TWITTER_API_KEY=your_api_key
+TWITTER_API_SECRET=your_api_secret
+TWITTER_ACCESS_TOKEN=your_access_token
+TWITTER_ACCESS_SECRET=your_access_secret
+
+AI_MODEL=claude
+AI_API_KEY=your_ai_api_key
+
+AUTO_REPLY=true
+SESSION_MEMORY=true
+PROACTIVE_BEHAVIOR=false</div>
+
+                    <div class="code-preview" id="personalityPreview">{
+  "name": "my-agent",
+  "personality": "A helpful assistant focused on developer tools and infrastructure. Direct, technical, and friendly.",
+  "autoReply": {
+    "enabled": true,
+    "mode": "command",
+    "model": "claude"
+  }
+}</div>
+
+                    <button onclick="downloadConfig()">Download Configuration</button>
+                </div>
+            </div>
+
+            <!-- Deploy Section -->
+            <div class="deploy-section">
+                <h2 class="panel-title">Deploy Your Agent</h2>
+                <p class="subtitle" style="margin-bottom: 1rem;">Choose a platform to deploy your configured agent</p>
+
+                <div class="deploy-options">
+                    <div class="deploy-card" onclick="deployTo('railway')">
+                        <h3>Railway</h3>
+                        <p>One-click deploy with automatic configuration. Free tier available.</p>
+                        <button>Deploy to Railway</button>
+                    </div>
+
+                    <div class="deploy-card" onclick="deployTo('render')">
+                        <h3>Render</h3>
+                        <p>Simple deployment from GitHub. Free tier for basic agents.</p>
+                        <button>Deploy to Render</button>
+                    </div>
+
+                    <div class="deploy-card" onclick="deployTo('fly')">
+                        <h3>Fly.io</h3>
+                        <p>Edge deployment with global distribution. Generous free tier.</p>
+                        <button>Deploy to Fly.io</button>
+                    </div>
+
+                    <div class="deploy-card" onclick="deployTo('manual')">
+                        <h3>Manual Setup</h3>
+                        <p>Deploy anywhere with Docker or Node.js. Full control.</p>
+                        <button>Get Instructions</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // State management
+        let config = {
+            name: 'my-agent',
+            personality: 'A helpful assistant focused on developer tools and infrastructure. Direct, technical, and friendly.',
+            providers: ['twitter'],
+            twitter: {
+                apiKey: '',
+                apiSecret: '',
+                accessToken: '',
+                accessSecret: ''
+            },
+            features: {
+                autoReply: true,
+                sessionMemory: true,
+                proactive: false
+            },
+            aiModel: 'claude',
+            aiApiKey: ''
+        };
+
+        // Provider selection
+        document.querySelectorAll('.provider-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const provider = option.dataset.provider;
+                option.classList.toggle('selected');
+                
+                if (option.classList.contains('selected')) {
+                    if (!config.providers.includes(provider)) {
+                        config.providers.push(provider);
+                    }
+                } else {
+                    config.providers = config.providers.filter(p => p !== provider);
+                }
+                
+                updatePreview();
+            });
+        });
+
+        // Form inputs
+        document.getElementById('agentName').addEventListener('input', (e) => {
+            config.name = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
+            e.target.value = config.name;
+            updatePreview();
+        });
+
+        document.getElementById('agentPersonality').addEventListener('input', (e) => {
+            config.personality = e.target.value;
+            updatePreview();
+        });
+
+        document.getElementById('twitterApiKey').addEventListener('input', (e) => {
+            config.twitter.apiKey = e.target.value;
+            updatePreview();
+        });
+
+        document.getElementById('twitterApiSecret').addEventListener('input', (e) => {
+            config.twitter.apiSecret = e.target.value;
+            updatePreview();
+        });
+
+        document.getElementById('twitterAccessToken').addEventListener('input', (e) => {
+            config.twitter.accessToken = e.target.value;
+            updatePreview();
+        });
+
+        document.getElementById('twitterAccessSecret').addEventListener('input', (e) => {
+            config.twitter.accessSecret = e.target.value;
+            updatePreview();
+        });
+
+        document.getElementById('autoReply').addEventListener('change', (e) => {
+            config.features.autoReply = e.target.checked;
+            updatePreview();
+        });
+
+        document.getElementById('sessionMemory').addEventListener('change', (e) => {
+            config.features.sessionMemory = e.target.checked;
+            updatePreview();
+        });
+
+        document.getElementById('proactive').addEventListener('change', (e) => {
+            config.features.proactive = e.target.checked;
+            updatePreview();
+        });
+
+        document.getElementById('aiModel').addEventListener('change', (e) => {
+            config.aiModel = e.target.value;
+            updatePreview();
+        });
+
+        document.getElementById('aiApiKey').addEventListener('input', (e) => {
+            config.aiApiKey = e.target.value;
+            updatePreview();
+        });
+
+        function updatePreview() {
+            // Update .env preview
+            const envConfig = [];
+            
+            if (config.providers.includes('twitter')) {
+                envConfig.push(`TWITTER_API_KEY=${config.twitter.apiKey || 'your_api_key'}`);
+                envConfig.push(`TWITTER_API_SECRET=${config.twitter.apiSecret || 'your_api_secret'}`);
+                envConfig.push(`TWITTER_ACCESS_TOKEN=${config.twitter.accessToken || 'your_access_token'}`);
+                envConfig.push(`TWITTER_ACCESS_SECRET=${config.twitter.accessSecret || 'your_access_secret'}`);
+                envConfig.push('');
+            }
+
+            envConfig.push(`AI_MODEL=${config.aiModel}`);
+            if (config.aiModel !== 'static') {
+                envConfig.push(`AI_API_KEY=${config.aiApiKey || 'your_ai_api_key'}`);
+            }
+            envConfig.push('');
+
+            envConfig.push(`AUTO_REPLY=${config.features.autoReply}`);
+            envConfig.push(`SESSION_MEMORY=${config.features.sessionMemory}`);
+            envConfig.push(`PROACTIVE_BEHAVIOR=${config.features.proactive}`);
+
+            document.getElementById('envPreview').textContent = envConfig.join('\n');
+
+            // Update personality preview
+            const personalityConfig = {
+                name: config.name,
+                personality: config.personality,
+                autoReply: {
+                    enabled: config.features.autoReply,
+                    mode: config.aiModel === 'static' ? 'static' : 'command',
+                    model: config.aiModel
+                }
+            };
+
+            document.getElementById('personalityPreview').textContent = 
+                JSON.stringify(personalityConfig, null, 2);
+
+            // Update status
+            const hasTwitterCreds = config.twitter.apiKey && config.twitter.apiSecret && 
+                                   config.twitter.accessToken && config.twitter.accessSecret;
+            const hasAiKey = config.aiModel === 'static' || config.aiApiKey;
+            const isComplete = hasTwitterCreds && hasAiKey;
+
+            const statusIndicator = document.querySelector('.status-indicator');
+            const statusText = document.getElementById('configStatus');
+
+            if (isComplete) {
+                statusIndicator.className = 'status-indicator status-ready';
+                statusText.textContent = 'Ready to deploy';
+            } else {
+                statusIndicator.className = 'status-indicator status-warning';
+                statusText.textContent = 'Configuration incomplete';
+            }
+        }
+
+        function downloadConfig() {
+            const envContent = document.getElementById('envPreview').textContent;
+            const personalityContent = document.getElementById('personalityPreview').textContent;
+
+            // Create .env file
+            const envBlob = new Blob([envContent], { type: 'text/plain' });
+            const envUrl = URL.createObjectURL(envBlob);
+            const envLink = document.createElement('a');
+            envLink.href = envUrl;
+            envLink.download = '.env';
+            envLink.click();
+
+            // Create config.json file
+            setTimeout(() => {
+                const configBlob = new Blob([personalityContent], { type: 'application/json' });
+                const configUrl = URL.createObjectURL(configBlob);
+                const configLink = document.createElement('a');
+                configLink.href = configUrl;
+                configLink.download = 'agent-config.json';
+                configLink.click();
+            }, 500);
+        }
+
+        function deployTo(platform) {
+            const hasTwitterCreds = config.twitter.apiKey && config.twitter.apiSecret && 
+                                   config.twitter.accessToken && config.twitter.accessSecret;
+            const hasAiKey = config.aiModel === 'static' || config.aiApiKey;
+            const isComplete = hasTwitterCreds && hasAiKey;
+
+            if (!isComplete) {
+                alert('Please complete the configuration before deploying');
+                return;
+            }
+
+            const repoUrl = 'https://github.com/warelayagent/warelay-agent';
+
+            switch(platform) {
+                case 'railway':
+                    window.open(`https://railway.app/new/template?template=${encodeURIComponent(repoUrl)}`, '_blank');
+                    break;
+                case 'render':
+                    window.open(`https://render.com/deploy?repo=${encodeURIComponent(repoUrl)}`, '_blank');
+                    break;
+                case 'fly':
+                    alert('Fly.io deployment instructions:\n\n1. Install flyctl: curl -L https://fly.io/install.sh | sh\n2. Clone the repo: git clone ' + repoUrl + '\n3. Deploy: flyctl launch');
+                    break;
+                case 'manual':
+                    alert('Manual deployment instructions:\n\n1. Clone: git clone ' + repoUrl + '\n2. Install: npm install\n3. Configure: Create .env with your settings\n4. Run: npm run warelay-agent relay --auto-reply');
+                    break;
+            }
+        }
+
+        // Initialize
+        updatePreview();
+    </script>
+</body>
+</html>
