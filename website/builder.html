@@ -342,15 +342,25 @@
                     <div class="form-group">
                         <label for="aiModel">AI Model</label>
                         <select id="aiModel">
-                            <option value="claude">Claude (Anthropic)</option>
-                            <option value="gpt4">GPT-4 (OpenAI)</option>
-                            <option value="static">Static templates</option>
+                            <option value="claude">Claude 3.5 Sonnet (Anthropic) - Best reasoning</option>
+                            <option value="gpt4">GPT-4 Turbo (OpenAI) - Fast & capable</option>
+                            <option value="gpt4o">GPT-4o (OpenAI) - Multimodal</option>
+                            <option value="grok">Grok (xAI) - Real-time X integration</option>
+                            <option value="gemini">Gemini Pro (Google) - Long context</option>
+                            <option value="llama">Llama 3.1 (Meta) - Open source</option>
+                            <option value="mixtral">Mixtral 8x7B (Mistral) - Fast inference</option>
+                            <option value="deepseek">DeepSeek (Open source) - Code-focused</option>
+                            <option value="static">Static templates (No AI)</option>
                         </select>
+                        <small id="modelDescription" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">Advanced reasoning and long conversations</small>
                     </div>
 
                     <div class="form-group" id="aiKeyGroup">
-                        <label for="aiApiKey">AI API Key</label>
-                        <input type="password" id="aiApiKey" placeholder="Your AI API Key">
+                        <label for="aiApiKey" id="aiKeyLabel">Anthropic API Key</label>
+                        <input type="password" id="aiApiKey" placeholder="sk-ant-...">
+                        <small style="display: block; margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">
+                            Get your API key from <a href="#" id="apiKeyLink" target="_blank" style="color: var(--accent);">console.anthropic.com</a>
+                        </small>
                     </div>
                 </div>
 
@@ -515,8 +525,44 @@ PROACTIVE_BEHAVIOR=false</div>
 
         document.getElementById('aiModel').addEventListener('change', (e) => {
             config.aiModel = e.target.value;
+            updateModelInfo(e.target.value);
             updatePreview();
         });
+
+        function updateModelInfo(model) {
+            const descriptions = {
+                'claude': 'Advanced reasoning and long conversations',
+                'gpt4': 'Fast responses with strong capabilities',
+                'gpt4o': 'Multimodal understanding (text, images, audio)',
+                'grok': 'Real-time X/Twitter integration and wit',
+                'gemini': 'Extremely long context (up to 1M tokens)',
+                'llama': 'Open source, self-hostable',
+                'mixtral': 'Fast inference with good quality',
+                'deepseek': 'Optimized for code and technical tasks',
+                'static': 'Pre-written templates (no AI required)'
+            };
+
+            const apiKeys = {
+                'claude': { label: 'Anthropic API Key', placeholder: 'sk-ant-...', link: 'https://console.anthropic.com' },
+                'gpt4': { label: 'OpenAI API Key', placeholder: 'sk-...', link: 'https://platform.openai.com/api-keys' },
+                'gpt4o': { label: 'OpenAI API Key', placeholder: 'sk-...', link: 'https://platform.openai.com/api-keys' },
+                'grok': { label: 'xAI API Key', placeholder: 'xai-...', link: 'https://console.x.ai' },
+                'gemini': { label: 'Google AI API Key', placeholder: 'AIza...', link: 'https://makersuite.google.com/app/apikey' },
+                'llama': { label: 'Groq API Key (for Llama)', placeholder: 'gsk_...', link: 'https://console.groq.com' },
+                'mixtral': { label: 'Mistral API Key', placeholder: 'api_...', link: 'https://console.mistral.ai' },
+                'deepseek': { label: 'DeepSeek API Key', placeholder: 'sk-...', link: 'https://platform.deepseek.com' },
+                'static': { label: 'No API Key Required', placeholder: 'N/A', link: '#' }
+            };
+
+            document.getElementById('modelDescription').textContent = descriptions[model] || '';
+            
+            if (apiKeys[model]) {
+                document.getElementById('aiKeyLabel').textContent = apiKeys[model].label;
+                document.getElementById('aiApiKey').placeholder = apiKeys[model].placeholder;
+                document.getElementById('apiKeyLink').href = apiKeys[model].link;
+                document.getElementById('aiKeyGroup').style.display = model === 'static' ? 'none' : 'block';
+            }
+        }
 
         document.getElementById('aiApiKey').addEventListener('input', (e) => {
             config.aiApiKey = e.target.value;
@@ -632,6 +678,7 @@ PROACTIVE_BEHAVIOR=false</div>
         }
 
         // Initialize
+        updateModelInfo('claude'); // Set default model info
         updatePreview();
     </script>
 </body>
