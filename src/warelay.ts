@@ -15,6 +15,7 @@ import {
 } from "./sentient/index.js";
 import { SolanaTrader, TradingBehavior } from "./trading/index.js";
 import { PredictionBehavior } from "./predictions/index.js";
+import { PolymarketBehavior } from "./polymarket/index.js";
 
 dotenv.config({ quiet: true });
 
@@ -99,6 +100,38 @@ async function startWarelay(): Promise<void> {
     console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
   }
 
+  // Initialize Polymarket predictions with Claude
+  const polymarket = new PolymarketBehavior({
+    enabled: process.env.ENABLE_POLYMARKET === "true",
+    updateInterval: parseInt(process.env.POLYMARKET_INTERVAL || "7200000"), // 2 hours default
+    categories: (process.env.POLYMARKET_CATEGORIES || "crypto,politics,sports").split(","),
+    minVolume: parseInt(process.env.POLYMARKET_MIN_VOLUME || "10000"),
+    maxMarketsPerUpdate: parseInt(process.env.POLYMARKET_MAX_MARKETS || "5"),
+    shareTopN: parseInt(process.env.POLYMARKET_SHARE_TOP || "3"),
+  });
+
+  if (process.env.ENABLE_POLYMARKET === "true") {
+    console.log("🎲 Initializing Polymarket analysis with Claude...");
+    polymarket.start(async (prediction) => {
+      console.log(`📊 Polymarket: ${prediction.market.question.substring(0, 50)}...`);
+      console.log(`   Claude's confidence: ${(prediction.claudeAnalysis.confidence * 100).toFixed(0)}%`);
+      console.log(`   Recommendation: ${prediction.claudeAnalysis.recommendedAction}`);
+      
+      try {
+        const formatted = polymarket.formatPrediction(prediction);
+        await client.sendTweet({ text: formatted });
+        console.log("✅ Shared Polymarket analysis publicly");
+      } catch (error: any) {
+        console.error("❌ Failed to share Polymarket analysis:", error.message);
+      }
+    });
+    console.log("✅ Polymarket analysis started");
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+  } else {
+    console.log("💤 Polymarket analysis disabled (set ENABLE_POLYMARKET=true to enable)");
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+  }
+
   // Initialize trading (optional - only if configured)
   if (process.env.SOLANA_PRIVATE_KEY && process.env.ENABLE_TRADING === "true") {
     console.log("💹 Initializing Solana trading...");
@@ -177,6 +210,9 @@ async function startWarelay(): Promise<void> {
   console.log("  ✓ Autonomous thought generation");
   if (process.env.ENABLE_PREDICTIONS !== "false") {
     console.log("  ✓ Market predictions from multiple data sources");
+  }
+  if (process.env.ENABLE_POLYMARKET === "true") {
+    console.log("  ✓ Claude-powered Polymarket analysis");
   }
   if (process.env.ENABLE_TRADING === "true") {
     console.log("  ✓ Autonomous Solana memecoin trading");

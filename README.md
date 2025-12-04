@@ -22,6 +22,7 @@ npm start -- send --provider web --to "+1234567890" --message "Hello"
 ## Features
 
 - **Sentient Personality**: Memory, context-awareness, proactive behavior
+- **Claude-Powered Polymarket**: Real-time analysis of prediction markets
 - **Prediction Market**: Multi-source data analysis for market forecasts
 - **Autonomous Trading**: Solana memecoin trading with risk management
 - **Multi-Platform**: WhatsApp (web), Twitter, extensible architecture
@@ -31,6 +32,7 @@ npm start -- send --provider web --to "+1234567890" --message "Hello"
 ## Documentation
 
 - [Sentient Agent Guide](WARELAY.md)
+- [Polymarket with Claude](POLYMARKET.md)
 - [Prediction Market](PREDICTIONS.md)
 - [Trading System Setup](TRADING.md)
 - [Trading Terminal](TERMINAL.md)
