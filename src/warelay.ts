@@ -14,6 +14,7 @@ import {
   SentientAutoReply,
 } from "./sentient/index.js";
 import { SolanaTrader, TradingBehavior } from "./trading/index.js";
+import { PredictionBehavior } from "./predictions/index.js";
 
 dotenv.config({ quiet: true });
 
@@ -66,6 +67,37 @@ async function startWarelay(): Promise<void> {
   console.log("🚀 Starting proactive behavior engine...");
   proactive.start(30); // Check every 30 minutes
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+
+  // Initialize prediction market
+  const predictions = new PredictionBehavior({
+    enabled: process.env.ENABLE_PREDICTIONS !== "false",
+    markets: (process.env.PREDICTION_MARKETS || "SOL/USD,BTC/USD").split(","),
+    updateInterval: parseInt(process.env.PREDICTION_INTERVAL || "3600000"), // 1 hour default
+    minConfidence: parseFloat(process.env.MIN_PREDICTION_CONFIDENCE || "0.6"),
+  });
+
+  if (process.env.ENABLE_PREDICTIONS !== "false") {
+    console.log("🔮 Initializing prediction market...");
+    predictions.start(async (prediction) => {
+      console.log(`📊 Generated prediction: ${prediction.market} - ${prediction.outcome}`);
+      
+      // Share high-confidence predictions publicly
+      if (prediction.confidence >= 0.7) {
+        try {
+          const formatted = predictions.formatPrediction(prediction);
+          await client.sendTweet({ text: formatted });
+          console.log("✅ Shared prediction publicly");
+        } catch (error: any) {
+          console.error("❌ Failed to share prediction:", error.message);
+        }
+      }
+    });
+    console.log("✅ Prediction market started");
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+  } else {
+    console.log("💤 Predictions disabled");
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+  }
 
   // Initialize trading (optional - only if configured)
   if (process.env.SOLANA_PRIVATE_KEY && process.env.ENABLE_TRADING === "true") {
@@ -143,6 +175,9 @@ async function startWarelay(): Promise<void> {
   console.log("  ✓ Consistent personality");
   console.log("  ✓ Context-aware responses");
   console.log("  ✓ Autonomous thought generation");
+  if (process.env.ENABLE_PREDICTIONS !== "false") {
+    console.log("  ✓ Market predictions from multiple data sources");
+  }
   if (process.env.ENABLE_TRADING === "true") {
     console.log("  ✓ Autonomous Solana memecoin trading");
   }

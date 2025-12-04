@@ -22,6 +22,7 @@ npm start -- send --provider web --to "+1234567890" --message "Hello"
 ## Features
 
 - **Sentient Personality**: Memory, context-awareness, proactive behavior
+- **Prediction Market**: Multi-source data analysis for market forecasts
 - **Autonomous Trading**: Solana memecoin trading with risk management
 - **Multi-Platform**: WhatsApp (web), Twitter, extensible architecture
 - **Real-Time Terminal**: Web dashboard for monitoring trades and agent thoughts
@@ -30,6 +31,7 @@ npm start -- send --provider web --to "+1234567890" --message "Hello"
 ## Documentation
 
 - [Sentient Agent Guide](WARELAY.md)
+- [Prediction Market](PREDICTIONS.md)
 - [Trading System Setup](TRADING.md)
 - [Trading Terminal](TERMINAL.md)
 - [Repository Guidelines](AGENTS.md)
