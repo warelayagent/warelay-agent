@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warelay Predictions - Live Market Analysis & Polymarket Bets</title>
+    <meta name="description" content="Real-time Claude-powered predictions, Polymarket analysis, and autonomous market intelligence.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0a0a0a;
+            --panel-bg: #141414;
+            --panel-hover: #1a1a1a;
+            --text: #e5e5e5;
+            --text-dim: #888;
+            --green: #22c55e;
+            --red: #ef4444;
+            --blue: #3b82f6;
+            --yellow: #eab308;
+            --purple: #a855f7;
+            --border: #2a2a2a;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .dashboard {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        header {
+            padding: 2rem 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .nav-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 2rem;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .panel:hover {
+            background: var(--panel-hover);
+            transform: translateY(-2px);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .panel-title {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .badge-success { background: rgba(34, 197, 94, 0.2); color: var(--green); }
+        .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--red); }
+        .badge-info { background: rgba(59, 130, 246, 0.2); color: var(--blue); }
+        .badge-warning { background: rgba(234, 179, 8, 0.2); color: var(--yellow); }
+        .badge-purple { background: rgba(168, 85, 247, 0.2); color: var(--purple); }
+
+        .metric {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .prediction-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.2s;
+        }
+
+        .prediction-card:hover {
+            border-color: var(--blue);
+            background: var(--panel-hover);
+        }
+
+        .prediction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+
+        .prediction-question {
+            font-size: 1rem;
+            font-weight: bold;
+            flex: 1;
+            margin-right: 1rem;
+        }
+
+        .prediction-confidence {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.25rem;
+        }
+
+        .confidence-value {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .prediction-reasoning {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            line-height: 1.5;
+        }
+
+        .prediction-factors {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .factor-tag {
+            padding: 0.25rem 0.5rem;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 3px;
+            font-size: 0.75rem;
+            color: var(--blue);
+        }
+
+        .prediction-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .polymarket-market {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.2s;
+        }
+
+        .polymarket-market:hover {
+            border-color: var(--purple);
+            background: var(--panel-hover);
+        }
+
+        .market-header {
+            margin-bottom: 0.75rem;
+        }
+
+        .market-question {
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .market-category {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: rgba(168, 85, 247, 0.2);
+            color: var(--purple);
+            font-size: 0.75rem;
+            border-radius: 3px;
+        }
+
+        .market-odds {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .odds-item {
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        .odds-label {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        .odds-value {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--green);
+        }
+
+        .claude-analysis {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid var(--blue);
+            padding: 0.75rem;
+            margin-top: 0.75rem;
+        }
+
+        .analysis-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .analysis-title {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--blue);
+        }
+
+        .analysis-text {
+            font-size: 0.85rem;
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        .sentiment-indicator {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .sentiment-bar {
+            flex: 1;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .sentiment-fill {
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+
+        .sentiment-bullish { background: var(--green); }
+        .sentiment-bearish { background: var(--red); }
+        .sentiment-neutral { background: var(--yellow); }
+
+        .accuracy-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 0.25rem;
+            height: 100px;
+            margin: 1rem 0;
+        }
+
+        .accuracy-bar {
+            flex: 1;
+            background: var(--green);
+            min-height: 20px;
+            border-radius: 2px 2px 0 0;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .accuracy-bar:hover {
+            opacity: 0.8;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-dim);
+        }
+
+        .spinner {
+            border: 2px solid var(--border);
+            border-top-color: var(--blue);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .status-bar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <header>
+            <div class="header-content">
+                <h1>🔮 Warelay Predictions</h1>
+                <div class="nav-links">
+                    <a href="index.html">home</a>
+                    <a href="terminal.html">trading</a>
+                    <a href="predictions.html">predictions</a>
+                    <a href="builder.html">builder</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot"></div>
+                <span>Claude Analysis: <strong>Active</strong></span>
+            </div>
+            <div class="status-item">
+                <span>Polymarket Markets: <strong id="market-count">Loading...</strong></span>
+            </div>
+            <div class="status-item">
+                <span>Accuracy Rate: <strong id="accuracy-rate">--</strong></span>
+            </div>
+            <div class="status-item">
+                <span>Last Update: <strong id="last-update">--</strong></span>
+            </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="grid">
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">Total Predictions</div>
+                    <div class="badge badge-info">All Time</div>
+                </div>
+                <div class="metric" id="total-predictions">--</div>
+                <div class="metric-label">Claude-powered analysis</div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">Accuracy Rate</div>
+                    <div class="badge badge-success">Verified</div>
+                </div>
+                <div class="metric" id="accuracy-metric">--</div>
+                <div class="metric-label">Correct predictions</div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">Active Markets</div>
+                    <div class="badge badge-warning">Live</div>
+                </div>
+                <div class="metric" id="active-markets">--</div>
+                <div class="metric-label">Monitoring now</div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">Confidence Average</div>
+                    <div class="badge badge-purple">Claude</div>
+                </div>
+                <div class="metric" id="avg-confidence">--</div>
+                <div class="metric-label">Model certainty</div>
+            </div>
+        </div>
+
+        <!-- Market Sentiment -->
+        <div style="margin-bottom: 2rem;">
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">Overall Market Sentiment</div>
+                    <div class="badge" id="sentiment-badge">Analyzing...</div>
+                </div>
+                <div class="sentiment-indicator">
+                    <span style="font-size: 0.85rem; color: var(--text-dim);">Bearish</span>
+                    <div class="sentiment-bar">
+                        <div class="sentiment-fill" id="sentiment-fill" style="width: 50%;"></div>
+                    </div>
+                    <span style="font-size: 0.85rem; color: var(--text-dim);">Bullish</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Predictions -->
+        <section style="margin-bottom: 2rem;">
+            <h2 style="font-size: 1.25rem; margin-bottom: 1rem; color: var(--text-dim);">Recent Predictions</h2>
+            <div id="recent-predictions">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div>Loading predictions...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Polymarket Analysis -->
+        <section style="margin-bottom: 2rem;">
+            <h2 style="font-size: 1.25rem; margin-bottom: 1rem; color: var(--text-dim);">Polymarket Markets</h2>
+            <div id="polymarket-markets">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div>Loading Polymarket data...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Accuracy Tracking -->
+        <section>
+            <h2 style="font-size: 1.25rem; margin-bottom: 1rem; color: var(--text-dim);">Accuracy History</h2>
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">Last 30 Days</div>
+                    <div class="badge badge-info" id="accuracy-trend">--</div>
+                </div>
+                <div class="accuracy-chart" id="accuracy-chart">
+                    <!-- Generated dynamically -->
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Simulated data - replace with real API calls
+        const mockPredictions = [
+            {
+                market: "SOL/USD Price Direction",
+                question: "Will Solana price exceed $200 in the next 24 hours?",
+                outcome: "Yes",
+                probability: 0.68,
+                confidence: 0.82,
+                reasoning: "Strong technical momentum with RSI at 65, increased whale accumulation detected on-chain, and positive social sentiment across major crypto communities. Recent protocol upgrades and ecosystem growth support bullish outlook.",
+                factors: ["Technical Analysis", "On-chain Data", "Social Sentiment", "Whale Activity"],
+                timestamp: new Date(Date.now() - 3600000),
+                timeframe: "24h"
+            },
+            {
+                market: "BTC Market Sentiment",
+                question: "Will Bitcoin maintain support above $42,000?",
+                outcome: "High Probability",
+                probability: 0.75,
+                confidence: 0.88,
+                reasoning: "Multiple indicators suggest strong support: institutional buying pressure, historically strong support level, low exchange reserves, and bullish derivatives positioning. ETF flows remain positive.",
+                factors: ["Institutional Flow", "Support Levels", "Exchange Reserves", "Derivatives"],
+                timestamp: new Date(Date.now() - 7200000),
+                timeframe: "48h"
+            },
+            {
+                market: "Crypto Market Volatility",
+                question: "Will crypto market volatility increase in next week?",
+                outcome: "Likely",
+                probability: 0.62,
+                confidence: 0.71,
+                reasoning: "Upcoming FOMC meeting, major protocol unlock schedules, and seasonal trading patterns indicate higher volatility ahead. Options markets pricing in 15% move.",
+                factors: ["Macro Events", "Token Unlocks", "Options Flow", "Seasonality"],
+                timestamp: new Date(Date.now() - 10800000),
+                timeframe: "7d"
+            }
+        ];
+
+        const mockPolymarketData = [
+            {
+                id: "pm-1",
+                question: "Will Bitcoin reach $50,000 by end of Q1 2025?",
+                category: "Crypto",
+                outcomePrices: [0.58, 0.42],
+                volume: 1250000,
+                claudeAnalysis: {
+                    prediction: "Agree with market (Yes)",
+                    confidence: 0.74,
+                    reasoning: "Historical Q1 performance, current momentum, and institutional adoption trends support this outcome. However, macro uncertainty remains a factor.",
+                    recommendedAction: "bet_yes",
+                    riskLevel: "medium"
+                }
+            },
+            {
+                id: "pm-2",
+                question: "Will Ethereum complete next major upgrade without delays?",
+                category: "Crypto",
+                outcomePrices: [0.72, 0.28],
+                volume: 850000,
+                claudeAnalysis: {
+                    prediction: "Agree with market (Yes)",
+                    confidence: 0.86,
+                    reasoning: "Development team has strong track record, testnet performance is solid, and community consensus is high. Timeline appears realistic.",
+                    recommendedAction: "bet_yes",
+                    riskLevel: "low"
+                }
+            },
+            {
+                id: "pm-3",
+                question: "Will total DeFi TVL exceed $100B in 2025?",
+                category: "DeFi",
+                outcomePrices: [0.65, 0.35],
+                volume: 620000,
+                claudeAnalysis: {
+                    prediction: "Neutral",
+                    confidence: 0.58,
+                    reasoning: "Growth trajectory is positive but regulatory headwinds and competition from CeFi create uncertainty. Market odds seem fairly priced.",
+                    recommendedAction: "hold",
+                    riskLevel: "high"
+                }
+            }
+        ];
+
+        function updateMetrics() {
+            const totalPredictions = Math.floor(Math.random() * 50) + 150;
+            const accuracy = (Math.random() * 0.15 + 0.72).toFixed(2);
+            const activeMarkets = Math.floor(Math.random() * 10) + 25;
+            const avgConfidence = (Math.random() * 0.2 + 0.75).toFixed(2);
+
+            document.getElementById('total-predictions').textContent = totalPredictions;
+            document.getElementById('accuracy-metric').textContent = `${(accuracy * 100).toFixed(0)}%`;
+            document.getElementById('active-markets').textContent = activeMarkets;
+            document.getElementById('avg-confidence').textContent = `${(avgConfidence * 100).toFixed(0)}%`;
+            document.getElementById('accuracy-rate').textContent = `${(accuracy * 100).toFixed(0)}%`;
+            document.getElementById('market-count').textContent = activeMarkets;
+            document.getElementById('last-update').textContent = 'Just now';
+
+            // Update sentiment
+            const sentiment = Math.random();
+            const sentimentFill = document.getElementById('sentiment-fill');
+            const sentimentBadge = document.getElementById('sentiment-badge');
+            
+            sentimentFill.style.width = `${sentiment * 100}%`;
+            if (sentiment > 0.6) {
+                sentimentFill.className = 'sentiment-fill sentiment-bullish';
+                sentimentBadge.textContent = 'Bullish';
+                sentimentBadge.className = 'badge badge-success';
+            } else if (sentiment < 0.4) {
+                sentimentFill.className = 'sentiment-fill sentiment-bearish';
+                sentimentBadge.textContent = 'Bearish';
+                sentimentBadge.className = 'badge badge-danger';
+            } else {
+                sentimentFill.className = 'sentiment-fill sentiment-neutral';
+                sentimentBadge.textContent = 'Neutral';
+                sentimentBadge.className = 'badge badge-warning';
+            }
+        }
+
+        function formatTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            const intervals = {
+                hour: 3600,
+                minute: 60
+            };
+
+            if (seconds < 60) return 'just now';
+            if (seconds < intervals.hour) {
+                const minutes = Math.floor(seconds / intervals.minute);
+                return `${minutes}m ago`;
+            }
+            const hours = Math.floor(seconds / intervals.hour);
+            return `${hours}h ago`;
+        }
+
+        function getConfidenceColor(confidence) {
+            if (confidence >= 0.8) return 'var(--green)';
+            if (confidence >= 0.6) return 'var(--yellow)';
+            return 'var(--red)';
+        }
+
+        function renderPredictions() {
+            const container = document.getElementById('recent-predictions');
+            container.innerHTML = mockPredictions.map(pred => `
+                <div class="prediction-card">
+                    <div class="prediction-header">
+                        <div class="prediction-question">${pred.question}</div>
+                        <div class="prediction-confidence">
+                            <div class="confidence-value" style="color: ${getConfidenceColor(pred.confidence)}">
+                                ${(pred.confidence * 100).toFixed(0)}%
+                            </div>
+                            <div class="metric-label">confidence</div>
+                        </div>
+                    </div>
+                    <div class="prediction-reasoning">${pred.reasoning}</div>
+                    <div class="prediction-factors">
+                        ${pred.factors.map(factor => `<span class="factor-tag">${factor}</span>`).join('')}
+                    </div>
+                    <div class="prediction-meta">
+                        <span><strong>Outcome:</strong> ${pred.outcome} (${(pred.probability * 100).toFixed(0)}%)</span>
+                        <span>${formatTimeAgo(pred.timestamp)}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderPolymarketMarkets() {
+            const container = document.getElementById('polymarket-markets');
+            container.innerHTML = mockPolymarketData.map(market => {
+                const yesOdds = (market.outcomePrices[0] * 100).toFixed(0);
+                const noOdds = (market.outcomePrices[1] * 100).toFixed(0);
+                const analysis = market.claudeAnalysis;
+                
+                return `
+                    <div class="polymarket-market">
+                        <div class="market-header">
+                            <div class="market-question">${market.question}</div>
+                            <span class="market-category">${market.category}</span>
+                        </div>
+                        <div class="market-odds">
+                            <div class="odds-item">
+                                <div class="odds-label">Yes</div>
+                                <div class="odds-value">${yesOdds}%</div>
+                            </div>
+                            <div class="odds-item">
+                                <div class="odds-label">No</div>
+                                <div class="odds-value" style="color: var(--red)">${noOdds}%</div>
+                            </div>
+                        </div>
+                        <div class="claude-analysis">
+                            <div class="analysis-header">
+                                <span class="analysis-title">🤖 Claude Analysis</span>
+                                <span class="badge badge-${analysis.riskLevel === 'low' ? 'success' : analysis.riskLevel === 'medium' ? 'warning' : 'danger'}">
+                                    ${analysis.confidence * 100}% confidence
+                                </span>
+                            </div>
+                            <div class="analysis-text">
+                                <strong>${analysis.prediction}</strong><br>
+                                ${analysis.reasoning}
+                            </div>
+                        </div>
+                        <div class="prediction-meta" style="margin-top: 0.75rem;">
+                            <span>Volume: $${(market.volume / 1000).toFixed(0)}K</span>
+                            <span class="badge badge-${
+                                analysis.recommendedAction === 'bet_yes' ? 'success' : 
+                                analysis.recommendedAction === 'bet_no' ? 'danger' : 'warning'
+                            }">${analysis.recommendedAction.replace('_', ' ').toUpperCase()}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderAccuracyChart() {
+            const container = document.getElementById('accuracy-chart');
+            const bars = Array.from({length: 30}, () => Math.random() * 0.3 + 0.65);
+            
+            container.innerHTML = bars.map(value => `
+                <div class="accuracy-bar" style="height: ${value * 100}%" 
+                     title="${(value * 100).toFixed(0)}% accurate"></div>
+            `).join('');
+
+            const avgAccuracy = bars.reduce((a, b) => a + b, 0) / bars.length;
+            const trend = bars[bars.length - 1] > bars[0] ? '📈 Improving' : '📉 Declining';
+            document.getElementById('accuracy-trend').textContent = trend;
+        }
+
+        // Initialize dashboard
+        updateMetrics();
+        renderPredictions();
+        renderPolymarketMarkets();
+        renderAccuracyChart();
+
+        // Update metrics every 10 seconds
+        setInterval(updateMetrics, 10000);
+
+        // Simulate new predictions every 30 seconds
+        setInterval(() => {
+            const timestamp = document.getElementById('last-update');
+            timestamp.textContent = 'Just now';
+            
+            // Could add animation or new prediction here
+        }, 30000);
+    </script>
+</body>
+</html>
