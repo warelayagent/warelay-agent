@@ -417,7 +417,7 @@ PROACTIVE_BEHAVIOR=false</div>
 
                     <div class="deploy-card" onclick="deployTo('render')">
                         <h3>Render</h3>
-                        <p>Simple deployment from GitHub. Free tier for basic agents.</p>
+                        <p>Simple deployment. Free tier for basic agents.</p>
                         <button>Deploy to Render</button>
                     </div>
 
@@ -659,20 +659,18 @@ PROACTIVE_BEHAVIOR=false</div>
                 return;
             }
 
-            const repoUrl = 'https://github.com/warelayagent/warelay-agent';
-
             switch(platform) {
                 case 'railway':
-                    window.open(`https://railway.app/new/template?template=${encodeURIComponent(repoUrl)}`, '_blank');
+                    window.open('https://railway.app', '_blank');
                     break;
                 case 'render':
-                    window.open(`https://render.com/deploy?repo=${encodeURIComponent(repoUrl)}`, '_blank');
+                    window.open('https://render.com', '_blank');
                     break;
                 case 'fly':
-                    alert('Fly.io deployment instructions:\n\n1. Install flyctl: curl -L https://fly.io/install.sh | sh\n2. Clone the repo: git clone ' + repoUrl + '\n3. Deploy: flyctl launch');
+                    alert('Fly.io deployment instructions:\n\n1. Install flyctl: curl -L https://fly.io/install.sh | sh\n2. Install warelay: npm install -g warelay-agent\n3. Deploy: flyctl launch');
                     break;
                 case 'manual':
-                    alert('Manual deployment instructions:\n\n1. Clone: git clone ' + repoUrl + '\n2. Install: npm install\n3. Configure: Create .env with your settings\n4. Run: npm run warelay-agent relay --auto-reply');
+                    alert('Manual deployment instructions:\n\n1. Install: npm install -g warelay-agent\n2. Configure: Create .env with your settings\n3. Run: npm run sentient');
                     break;
             }
         }
