@@ -405,7 +405,7 @@
     <div class="dashboard">
         <header>
             <div class="header-content">
-                <h1>🔮 Warelay Predictions</h1>
+                <h1>Warelay Predictions</h1>
                 <div class="nav-links">
                     <a href="index.html">home</a>
                     <a href="terminal.html">trading</a>
@@ -714,7 +714,7 @@
                         </div>
                         <div class="claude-analysis">
                             <div class="analysis-header">
-                                <span class="analysis-title">🤖 Claude Analysis</span>
+                                <span class="analysis-title">Claude Analysis</span>
                                 <span class="badge badge-${analysis.riskLevel === 'low' ? 'success' : analysis.riskLevel === 'medium' ? 'warning' : 'danger'}">
                                     ${analysis.confidence * 100}% confidence
                                 </span>
@@ -746,7 +746,7 @@
             `).join('');
 
             const avgAccuracy = bars.reduce((a, b) => a + b, 0) / bars.length;
-            const trend = bars[bars.length - 1] > bars[0] ? '📈 Improving' : '📉 Declining';
+            const trend = bars[bars.length - 1] > bars[0] ? 'Improving' : 'Declining';
             document.getElementById('accuracy-trend').textContent = trend;
         }
 
